@@ -1,0 +1,53 @@
+{
+	"name": "df_bronze_inventario",
+	"properties": {
+		"folder": {
+			"name": "bronze"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "inventario_xlsx",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          codigo_producto as string,",
+				"          nombre_producto as string,",
+				"          categoria as string,",
+				"          precio_venta as string,",
+				"          costo_adquisicion as string,",
+				"          stock_actual as string,",
+				"          stock_minimo as string,",
+				"          sucursal as string,",
+				"          proveedor as string,",
+				"          ultima_reposicion as string,",
+				"          activo as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(codigo_producto = trim(codigo_producto),",
+				"          nombre_producto = lower(trim(nombre_producto)),",
+				"          categoria = lower(trim(categoria)),",
+				"          sucursal = trim(sucursal),",
+				"          proveedor = trim(proveedor)) ~> derivedColumn1",
+				"derivedColumn1 derive(nombre_producto = initCap(regexReplace(nombre_producto, '\\\\s+', ' '))) ~> derivedColumn2"
+			]
+		}
+	}
+}
