@@ -22,6 +22,12 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
 				}
 			],
 			"scriptLines": [
@@ -46,7 +52,25 @@
 				"          categoria = lower(trim(categoria)),",
 				"          sucursal = trim(sucursal),",
 				"          proveedor = trim(proveedor)) ~> derivedColumn1",
-				"derivedColumn1 derive(nombre_producto = initCap(regexReplace(nombre_producto, '\\\\s+', ' '))) ~> derivedColumn2"
+				"derivedColumn1 derive(nombre_producto = initCap(regexReplace(nombre_producto, '\\\\s+', ' '))) ~> derivedColumn2",
+				"derivedColumn2 derive(categoria = case(",
+				"  in(['computadoras','laptops','pcs'], categoria), 'Computadoras',",
+				"  in(['monitores','pantallas'], categoria), 'Monitores',",
+				"  in(['perifericos','periféricos'], categoria), 'Perifericos',",
+				"  in(['audio','sonido'], categoria), 'Audio',",
+				"  in(['tablets','tabletas'], categoria), 'Tablets',",
+				"  in(['impresoras','printers'], categoria), 'Impresoras',",
+				"  in(['almacenamiento','storage'], categoria), 'Almacenamiento',",
+				"  in(['accesorios','acc.'], categoria), 'Accesorios',",
+				"  in(['redes','networking'], categoria), 'Redes',",
+				"  in(['componentes','hardware'], categoria), 'Componentes',",
+				"  categoria",
+				"  )) ~> derivedColumn3",
+				"derivedColumn3 derive(precio_venta = toFloat(regexReplace(toString(precio_venta), '[^0-9.]', '')),",
+				"          activo = iif(in(['si','true','1','yes'],lower(trim(toString(activo)))),true(),false()),",
+				"          sucursal = case(",
+				"  in(['SCZ','Santa Cruz','Sta Cruz','santa cruz'], sucursal), 'Santa Cruz',",
+				"  in(['LPZ','La Paz','LP','la paz'], sucursal), 'La Paz', sucursal)) ~> derivedColumn4"
 			]
 		}
 	}
