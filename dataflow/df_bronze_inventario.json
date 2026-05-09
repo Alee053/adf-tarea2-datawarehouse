@@ -28,6 +28,15 @@
 				},
 				{
 					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "derivedColumn6"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -70,7 +79,33 @@
 				"          activo = iif(in(['si','true','1','yes'],lower(trim(toString(activo)))),true(),false()),",
 				"          sucursal = case(",
 				"  in(['SCZ','Santa Cruz','Sta Cruz','santa cruz'], sucursal), 'Santa Cruz',",
-				"  in(['LPZ','La Paz','LP','la paz'], sucursal), 'La Paz', sucursal)) ~> derivedColumn4"
+				"  in(['LPZ','La Paz','LP','la paz'], sucursal), 'La Paz', sucursal)) ~> derivedColumn4",
+				"derivedColumn4 derive(ultima_reposicion = coalesce(",
+				"  toDate(ultima_reposicion, 'yyyy-MM-dd'),",
+				"  toDate(ultima_reposicion, 'dd/MM/yyyy'),",
+				"  toDate(ultima_reposicion, 'MM-dd-yyyy'),",
+				"  toDate(ultima_reposicion, 'yyyy/MM/dd'),",
+				"  toDate(ultima_reposicion, 'dd-MMM-yyyy'),",
+				"  toDate(ultima_reposicion, 'MMMM dd, yyyy'),",
+				"  toDate(ultima_reposicion, \"dd 'de' MMMM 'de' yyyy\")",
+				")) ~> derivedColumn5",
+				"derivedColumn5 derive(precio_venta = iifNull(precio_venta, 0.0, precio_venta),",
+				"          costo_adquisicion = toFloat(iifNull(costo_adquisicion, \"0.0\", costo_adquisicion)),",
+				"          stock_actual = toInteger(stock_actual)) ~> derivedColumn6",
+				"derivedColumn6 select(mapColumn(",
+				"          codigo_producto,",
+				"          nombre_producto,",
+				"          categoria,",
+				"          precio_venta,",
+				"          costo_adquisicion,",
+				"          stock_actual,",
+				"          sucursal,",
+				"          proveedor,",
+				"          ultima_reposicion,",
+				"          activo",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
 			]
 		}
 	}
