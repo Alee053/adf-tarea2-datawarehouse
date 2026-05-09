@@ -45,6 +45,9 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -114,7 +117,18 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"select1 aggregate(groupBy(codigo_producto),",
+				"     stock_actual = sum(stock_actual),",
+				"          nombre_producto = first(nombre_producto),",
+				"          categoria = first(categoria),",
+				"          precio_venta = first(precio_venta),",
+				"          costo_adquisicion = first(costo_adquisicion),",
+				"          stock_actual = first(stock_actual),",
+				"          sucursal = first(sucursal),",
+				"          proveedor = first(proveedor),",
+				"          ultima_reposicion = first(ultima_reposicion),",
+				"          activo = first(activo)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          codigo_producto as string,",
