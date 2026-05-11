@@ -57,6 +57,12 @@
 				},
 				{
 					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "derivedColumn6"
 				}
 			],
 			"scriptLines": [
@@ -159,7 +165,13 @@
 				"  toDate(fecha_venta, 'MMMM dd, yyyy'),",
 				"  toDate(fecha_venta, \"dd 'de' MMMM 'de' yyyy\")",
 				"),",
-				"          nombre_producto_original = initCap(regexReplace(trim(nombre_producto_original), '\\\\s+', ' '))) ~> derivedColumn4"
+				"          nombre_producto_original = initCap(regexReplace(trim(nombre_producto_original), '\\\\s+', ' ')),",
+				"          precio_unitario = toDecimal(regexReplace(toString(precio_unitario), '[^0-9.]', '')),",
+				"          cantidad = toInteger(cantidad)) ~> derivedColumn4",
+				"derivedColumn4 derive(precio_unitario = iifNull(precio_unitario, 0.0, precio_unitario),",
+				"          costo_envio = iifNull(costo_envio, \"0.0\", costo_envio),",
+				"          cantidad = iifNull(cantidad, 0, cantidad)) ~> derivedColumn5",
+				"derivedColumn5 derive(monto_total = precio_unitario*cantidad) ~> derivedColumn6"
 			]
 		}
 	}
